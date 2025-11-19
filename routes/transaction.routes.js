@@ -22,7 +22,17 @@ router.post(
   catchAsync(transactionController.addTransaction)
 );
 
-router.put('/:id', catchAsync(transactionController.updateTransaction));
+router.put(
+  '/:id',
+  [
+    body('type', 'Type is required').optional().isIn(['income', 'expense']),
+    body('amount', 'Amount must be a positive number').optional().isFloat({ gt: 0 }),
+    body('paymentMode', 'Payment mode is required').optional().isIn(['online', 'offline']),
+    body('description', 'Description is required').optional().not().isEmpty(),
+    body('date', 'Date is required').optional().isISO8601().toDate(),
+  ],
+  catchAsync(transactionController.updateTransaction)
+);
 
 router.delete('/:id', catchAsync(transactionController.deleteTransaction));
 

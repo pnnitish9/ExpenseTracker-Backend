@@ -43,8 +43,13 @@ const transactionController = {
   },
 
   updateTransaction: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      throw new ApiError(httpStatus.BAD_REQUEST, errors.array()[0].msg);
+    }
+
     const { id } = req.params;
-    const { amount, paymentMode, description, date } = req.body;
+    const { type, amount, paymentMode, description, date } = req.body;
 
     let transaction = await Transaction.findById(id);
 
@@ -56,9 +61,17 @@ const transactionController = {
       throw new ApiError(httpStatus.FORBIDDEN, 'User not authorized');
     }
 
+    // Build update object with only provided fields
+    const updateData = {};
+    if (type !== undefined) updateData.type = type;
+    if (amount !== undefined) updateData.amount = amount;
+    if (paymentMode !== undefined) updateData.paymentMode = paymentMode;
+    if (description !== undefined) updateData.description = description;
+    if (date !== undefined) updateData.date = date;
+
     transaction = await Transaction.findByIdAndUpdate(
       id,
-      { $set: { amount, paymentMode, description, date } },
+      { $set: updateData },
       { new: true, runValidators: true }
     );
 
