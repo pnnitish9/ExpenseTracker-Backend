@@ -15,7 +15,7 @@ router.post(
   [
     body('type', 'Type is required').isIn(['income', 'expense']),
     body('amount', 'Amount must be a positive number').isFloat({ gt: 0 }),
-    body('category', 'Category is required').not().isEmpty(),
+    body('paymentMode', 'Payment mode is required').isIn(['online', 'offline']),
     body('description', 'Description is required').not().isEmpty(),
     body('date', 'Date is required').isISO8601().toDate(),
   ],

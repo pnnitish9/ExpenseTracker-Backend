@@ -24,13 +24,13 @@ const transactionController = {
       throw new ApiError(httpStatus.BAD_REQUEST, errors.array()[0].msg);
     }
 
-    const { type, amount, category, description, date } = req.body;
+    const { type, amount, paymentMode, description, date } = req.body;
 
     const transaction = await Transaction.create({
       user: req.user.id,
       type,
       amount,
-      category,
+      paymentMode,
       description,
       date,
     });
@@ -44,7 +44,7 @@ const transactionController = {
 
   updateTransaction: async (req, res) => {
     const { id } = req.params;
-    const { amount, category, description, date } = req.body;
+    const { amount, paymentMode, description, date } = req.body;
 
     let transaction = await Transaction.findById(id);
 
@@ -58,7 +58,7 @@ const transactionController = {
 
     transaction = await Transaction.findByIdAndUpdate(
       id,
-      { $set: { amount, category, description, date } },
+      { $set: { amount, paymentMode, description, date } },
       { new: true, runValidators: true }
     );
 
